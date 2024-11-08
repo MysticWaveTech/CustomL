@@ -96,6 +96,13 @@
       color: #ff6b6b;
     }
 
+    /* Styling for image previews */
+    .image-preview {
+      margin-top: 10px;
+      max-width: 100%;
+      border-radius: 5px;
+    }
+
   </style>
 </head>
 <body>
@@ -123,11 +130,9 @@
     function addRadioDevice() {
       const controlPanel = document.getElementById("controlPanel");
 
-      // Create the container div
       const controlItem = document.createElement("div");
       controlItem.classList.add("control-item");
 
-      // Add label and input for frequency
       controlItem.innerHTML = `
         <label>Radio Frequency:</label>
         <input type="text" placeholder="Enter frequency (e.g., 88.1 MHz)" />
@@ -141,11 +146,9 @@
     function addAudioRecording() {
       const controlPanel = document.getElementById("controlPanel");
 
-      // Create the container div
       const controlItem = document.createElement("div");
       controlItem.classList.add("control-item");
 
-      // Add label and file input for audio
       controlItem.innerHTML = `
         <label>Audio Recording:</label>
         <input type="file" accept="audio/*" />
@@ -155,36 +158,36 @@
       controlPanel.appendChild(controlItem);
     }
 
-    // Function to add a new K card control
+    // Function to add a new K card control with image previews
     function addKCard() {
       const controlPanel = document.getElementById("controlPanel");
 
-      // Create the container div
       const controlItem = document.createElement("div");
       controlItem.classList.add("control-item");
 
-      // Add label and file input for front and back images of K card
       controlItem.innerHTML = `
         <label>K Card:</label>
         <label>Front Image:</label>
-        <input type="file" accept="image/*" />
+        <input type="file" accept="image/*" onchange="displayImagePreview(this)">
+        <img class="image-preview" style="display:none;" alt="K Card Front Preview">
+        
         <label>Back Image:</label>
-        <input type="file" accept="image/*" />
+        <input type="file" accept="image/*" onchange="displayImagePreview(this)">
+        <img class="image-preview" style="display:none;" alt="K Card Back Preview">
+        
         <button onclick="removeControl(this)">Remove</button>
       `;
 
       controlPanel.appendChild(controlItem);
     }
 
-    // Function to add a new Advanced Device control
+    // Function to add a new Advanced Device control with witness image preview
     function addAdvancedDevice() {
       const controlPanel = document.getElementById("controlPanel");
 
-      // Create the container div for the advanced device
       const controlItem = document.createElement("div");
       controlItem.classList.add("control-item");
 
-      // Add fields for the advanced device
       controlItem.innerHTML = `
         <label>Advanced Device Name:</label>
         <input type="text" placeholder="Enter device name" />
@@ -195,17 +198,8 @@
         <input type="text" placeholder="Enter witness name" />
         
         <label>Witness Photo:</label>
-        <input type="file" accept="image/*" />
-
-        <!-- Sliders for device power, speed, and effectiveness -->
-        <label class="slider-label">Power Level:</label>
-        <input type="range" min="1" max="100" value="50" class="slider" id="powerSlider">
-        
-        <label class="slider-label">Speed Level:</label>
-        <input type="range" min="1" max="100" value="50" class="slider" id="speedSlider">
-        
-        <label class="slider-label">Effectiveness Level:</label>
-        <input type="range" min="1" max="100" value="50" class="slider" id="effectivenessSlider">
+        <input type="file" accept="image/*" onchange="displayImagePreview(this)">
+        <img class="image-preview" style="display:none;" alt="Witness Photo Preview">
 
         <button onclick="removeControl(this)">Remove</button>
       `;
@@ -223,23 +217,20 @@
       const broadcastButton = document.getElementById("broadcastButton");
 
       if (isBroadcasting) {
-        // If already broadcasting, stop and change the button label back
         broadcastButton.textContent = "Start Broadcasting";
         broadcastButton.style.backgroundColor = "#007bff";  // Reset to blue
         isBroadcasting = false;
       } else {
-        // Start broadcasting
         broadcastButton.textContent = "Broadcasting...";
-        broadcastButton.style.backgroundColor = "#0056b3";  // Darker blue to show active state
+        broadcastButton.style.backgroundColor = "#0056b3";  // Active state
         isBroadcasting = true;
 
-        // Play audio and radio device if provided
         playAudio();
         playRadio();
       }
     }
 
-    // Function to simulate playing audio files (this can be expanded for actual functionality)
+    // Function to simulate playing audio files (expand for actual functionality)
     function playAudio() {
       const audioInputs = document.querySelectorAll('input[type="file"][accept="audio/*"]');
       audioInputs.forEach(input => {
@@ -251,16 +242,25 @@
       });
     }
 
-    // Function to simulate playing radio frequencies (this can be expanded for actual functionality)
+    // Function to simulate playing radio frequencies
     function playRadio() {
       const radioInputs = document.querySelectorAll('input[type="text"][placeholder="Enter frequency (e.g., 88.1 MHz)"]');
       radioInputs.forEach(input => {
         const frequency = input.value;
         if (frequency) {
           console.log(`Tuning into frequency: ${frequency}`);
-          // Simulate the playing of radio at this frequency (real implementation would involve more details)
         }
       });
+    }
+
+    // Function to display image preview for uploaded K card and witness images
+    function displayImagePreview(input) {
+      const file = input.files[0];
+      if (file) {
+        const previewImg = input.nextElementSibling;
+        previewImg.src = URL.createObjectURL(file);
+        previewImg.style.display = "block";
+      }
     }
   </script>
 </body>
