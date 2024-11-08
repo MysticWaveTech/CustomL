@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radionics Device Interface</title>
+  <style>
+    /* Basic styling for the interface */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #222;
+      color: #fff;
+      margin: 0;
+    }
+
+    .radionics-device {
+      width: 90%;
+      max-width: 600px;
+      padding: 20px;
+      border: 2px solid #ff6b6b;
+      border-radius: 10px;
+      background: #333;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      margin-bottom: 20px;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+    }
+
+    /* Input fields and buttons */
+    input, button, textarea {
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      color: #333;
+      font-size: 0.9rem;
+    }
+
+    button {
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    /* Red buttons for other actions */
+    button:not(#broadcastButton) {
+      background-color: #ff6b6b;
+      color: #fff;
+    }
+
+    button:not(#broadcastButton):hover {
+      background-color: #ff4c4c;
+    }
+
+    /* Blue button for broadcasting */
+    #broadcastButton {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    #broadcastButton:hover {
+      background-color: #0056b3;
+    }
+
+    label {
+      font-weight: bold;
+      color: #ff6b6b;
+    }
+
+    .slider {
+      width: 100%;
+    }
+
+    .slider-label {
+      margin-top: 5px;
+      color: #ff6b6b;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="radionics-device">
+    <h1>Radionics Device</h1>
+
+    <div class="controls" id="controlPanel">
+      <!-- Controls will be added here dynamically -->
+    </div>
+
+    <!-- Buttons to add new elements -->
+    <div style="text-align: center; margin-top: 20px;">
+      <button onclick="addRadioDevice()">Add Radio Device</button>
+      <button onclick="addAudioRecording()">Add Audio Recording</button>
+      <button onclick="addKCard()">Add K Card</button>
+      <button onclick="addAdvancedDevice()">Add Advanced Device</button>
+      <button id="broadcastButton" onclick="startBroadcasting()">Start Broadcasting</button>
+    </div>
+  </div>
+
+  <script>
+    let isBroadcasting = false;  // Keeps track of the broadcasting state
+
+    // Function to add a new radio device control
+    function addRadioDevice() {
+      const controlPanel = document.getElementById("controlPanel");
+
+      // Create the container div
+      const controlItem = document.createElement("div");
+      controlItem.classList.add("control-item");
+
+      // Add label and input for frequency
+      controlItem.innerHTML = `
+        <label>Radio Frequency:</label>
+        <input type="text" placeholder="Enter frequency (e.g., 88.1 MHz)" />
+        <button onclick="removeControl(this)">Remove</button>
+      `;
+
+      controlPanel.appendChild(controlItem);
+    }
+
+    // Function to add a new audio recording control
+    function addAudioRecording() {
+      const controlPanel = document.getElementById("controlPanel");
+
+      // Create the container div
+      const controlItem = document.createElement("div");
+      controlItem.classList.add("control-item");
+
+      // Add label and file input for audio
+      controlItem.innerHTML = `
+        <label>Audio Recording:</label>
+        <input type="file" accept="audio/*" />
+        <button onclick="removeControl(this)">Remove</button>
+      `;
+
+      controlPanel.appendChild(controlItem);
+    }
+
+    // Function to add a new K card control
+    function addKCard() {
+      const controlPanel = document.getElementById("controlPanel");
+
+      // Create the container div
+      const controlItem = document.createElement("div");
+      controlItem.classList.add("control-item");
+
+      // Add label and file input for front and back images of K card
+      controlItem.innerHTML = `
+        <label>K Card:</label>
+        <label>Front Image:</label>
+        <input type="file" accept="image/*" />
+        <label>Back Image:</label>
+        <input type="file" accept="image/*" />
+        <button onclick="removeControl(this)">Remove</button>
+      `;
+
+      controlPanel.appendChild(controlItem);
+    }
+
+    // Function to add a new Advanced Device control
+    function addAdvancedDevice() {
+      const controlPanel = document.getElementById("controlPanel");
+
+      // Create the container div for the advanced device
+      const controlItem = document.createElement("div");
+      controlItem.classList.add("control-item");
+
+      // Add fields for the advanced device
+      controlItem.innerHTML = `
+        <label>Advanced Device Name:</label>
+        <input type="text" placeholder="Enter device name" />
+        <label>Device Description:</label>
+        <textarea placeholder="Describe the device's capabilities" rows="4"></textarea>
+        
+        <label>Witness Name:</label>
+        <input type="text" placeholder="Enter witness name" />
+        
+        <label>Witness Photo:</label>
+        <input type="file" accept="image/*" />
+
+        <!-- Sliders for device power, speed, and effectiveness -->
+        <label class="slider-label">Power Level:</label>
+        <input type="range" min="1" max="100" value="50" class="slider" id="powerSlider">
+        
+        <label class="slider-label">Speed Level:</label>
+        <input type="range" min="1" max="100" value="50" class="slider" id="speedSlider">
+        
+        <label class="slider-label">Effectiveness Level:</label>
+        <input type="range" min="1" max="100" value="50" class="slider" id="effectivenessSlider">
+
+        <button onclick="removeControl(this)">Remove</button>
+      `;
+
+      controlPanel.appendChild(controlItem);
+    }
+
+    // Function to remove a control item
+    function removeControl(button) {
+      button.parentElement.remove();
+    }
+
+    // Function to start broadcasting the audio and radio device
+    function startBroadcasting() {
+      const broadcastButton = document.getElementById("broadcastButton");
+
+      if (isBroadcasting) {
+        // If already broadcasting, stop and change the button label back
+        broadcastButton.textContent = "Start Broadcasting";
+        broadcastButton.style.backgroundColor = "#007bff";  // Reset to blue
+        isBroadcasting = false;
+      } else {
+        // Start broadcasting
+        broadcastButton.textContent = "Broadcasting...";
+        broadcastButton.style.backgroundColor = "#0056b3";  // Darker blue to show active state
+        isBroadcasting = true;
+
+        // Play audio and radio device if provided
+        playAudio();
+        playRadio();
+      }
+    }
+
+    // Function to simulate playing audio files (this can be expanded for actual functionality)
+    function playAudio() {
+      const audioInputs = document.querySelectorAll('input[type="file"][accept="audio/*"]');
+      audioInputs.forEach(input => {
+        if (input.files.length > 0) {
+          const audioFile = input.files[0];
+          const audio = new Audio(URL.createObjectURL(audioFile));
+          audio.play();
+        }
+      });
+    }
+
+    // Function to simulate playing radio frequencies (this can be expanded for actual functionality)
+    function playRadio() {
+      const radioInputs = document.querySelectorAll('input[type="text"][placeholder="Enter frequency (e.g., 88.1 MHz)"]');
+      radioInputs.forEach(input => {
+        const frequency = input.value;
+        if (frequency) {
+          console.log(`Tuning into frequency: ${frequency}`);
+          // Simulate the playing of radio at this frequency (real implementation would involve more details)
+        }
+      });
+    }
+  </script>
+</body>
+</html>
